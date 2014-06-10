@@ -27,7 +27,7 @@
     <label><input type="radio" name="ontario" value="yes" checked> Yes</label>
     <label><input type="radio" name="ontario" value="no"> No</label>
   </form>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="d3.v3.min.js"></script>
     <script>
     (function(){
       'use strict';
@@ -56,8 +56,8 @@
       };
 
       var tooltipMove = function(d, i) {
-        tooltip.style('top', (event.pageY + 10) + 'px')
-          .style('left', (event.pageX + 10) + 'px');
+        tooltip.style('top', (d3.event.pageY + 10) + 'px')
+          .style('left', (d3.event.pageX + 10) + 'px');
       };
  
       var tooltipOff = function() {
