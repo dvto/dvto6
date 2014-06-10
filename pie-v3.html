@@ -52,20 +52,17 @@
           .enter()
           .append('g')
           .attr('class', 'legend')
-          .attr('transform', function(d, i) { 
-            return 'translate(-' + width + ',' + (i * 20 - 100) + ')'; 
-          });
+          .attr('transform', function(d, i) { return 'translate(0,' + (i * 20 - 100) + ')'; });
 
         legend.append('rect')
-          .attr('x', width - 18)
           .attr('width', 18)
           .attr('height', 18)
+          .attr('x', -18)
           .style('fill', color);
 
         legend.append('text')
-          .attr('x', width + 4)
-          .attr('y', 9)
-          .attr('dy', '.35em')
+          .attr('x', 4)
+          .attr('y', 13)
           .text(function(d) { return d; });
       });
     })();
