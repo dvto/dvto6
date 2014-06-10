@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Line Chart v1</title>
+    <style>
+    body {
+      font: 10px sans-serif;
+    }
+    .axis path, .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    .line {
+      fill: none;
+      stroke: steelblue;
+      stroke-width: 1.5px;
+    }
+    </style>
+  </head>
+  <body>
+    <script src="d3.v3.min.js"></script>
+    <script>
+      (function() {
+        'use strict';
+
+        var margin = {top: 20, right: 20, bottom: 30, left: 50},
+          width = 960 - margin.left - margin.right,
+          height = 500 - margin.top - margin.bottom;
+
+        var parseTime = d3.time.format("%Y%m%d%H%M").parse;
+
+        var x = d3.time.scale()
+          .range([0, width]);
+
+        var y = d3.scale.linear()
+          .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient('bottom');
+
+        var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient('left');
+
+        var line = d3.svg.line()
+          .x(function(d) { return x(d.time); })
+          .y(function(d) { return y(d.count); });
+
+        var svg = d3.select('body').append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        d3.csv('times.csv', function(error, data) {
+          data.forEach(function(d) {
+            d.time = parseTime((function() {
+              var len = d.time.length,
+                t;
+              if (len === 1) t = ['20120101000', d.time].join('');
+              else if (len === 2) t = ['2012010100', d.time].join('');
+              else if (len === 3) t = ['201201010', d.time].join('');
+              else t = ['20120101', d.time].join('');
+              return t;
+            })()),
+            d.count = +d.count;
+          });
+
+          x.domain(d3.extent(data, function(d) { return d.time; }));
+          y.domain(d3.extent(data, function(d) { return d.count; }));
+
+          svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(xAxis);
+
+          svg.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis)
+            .append('text')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', 6)
+            .attr('dy', '.71em')
+            .style('text-anchor', 'end')
+            .text('Total');
+
+          svg.append('path')
+            .datum(data)
+            .attr('class', 'line')
+            .attr('d', line);
+        });
+    })();
+  </script>
+  </body>
+</html>
