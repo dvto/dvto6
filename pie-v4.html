@@ -74,8 +74,9 @@
           .enter()
           .append('path')
           .attr('d', arc)
-          .attr('fill', function(d, i) { return color(d.data.province); })
-          .on('mouseover', tooltipOn)
+          .attr('fill', function(d, i) { return color(d.data.province); });
+        
+        path.on('mouseover', tooltipOn)
           .on('mousemove', tooltipMove)
           .on('mouseout', tooltipOff);
 
