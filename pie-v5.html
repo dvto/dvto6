@@ -7,6 +7,10 @@
     body {
       font: 10px sans-serif;
     }
+    form {
+      left: 250px;
+      position: absolute;
+    }
     label {
       cursor: pointer;
     }
@@ -23,11 +27,11 @@
     </style>
   </head>
   <body>
-  <form>
-    <h3>Include Ontario</h3>
-    <label><input type="radio" name="ontario" value="yes" checked> Yes</label>
-    <label><input type="radio" name="ontario" value="no"> No</label>
-  </form>
+    <form>
+      <h3>Include Ontario:</h3>
+      <label><input type="radio" name="ontario" value="yes" checked> Yes</label>
+      <label><input type="radio" name="ontario" value="no"> No</label>
+    </form>
     <script src="d3.v3.min.js"></script>
     <script>
     (function(){
@@ -44,8 +48,8 @@
         .innerRadius(radius - 110);
 
       var pie = d3.layout.pie()
-        .value(function(d) { return d.count; }).
-        sort(null);
+        .value(function(d) { return d.count; })
+        .sort(null);
 
       var tooltip = d3.select('body')
         .append('div')
@@ -86,16 +90,18 @@
           d.count = +d.count;
         });
 
-        var path = svg.datum(data).selectAll('path')
+        var path = svg.datum(data)
+          .selectAll('path')
           .data(pie)
           .enter()
           .append('path')
-          .attr('fill', function(d, i) { return color(d.data.province); })
           .attr('d', arc)
-          .on('mouseover', tooltipOn)
-          .on('mousemove', tooltipMove)
-          .on('mouseout', tooltipOff)
+          .attr('fill', function(d, i) { return color(d.data.province); })
           .each(function(d) { this._current = d; });
+
+        path.on('mouseover', tooltipOn)
+          .on('mousemove', tooltipMove)
+          .on('mouseout', tooltipOff);
 
         var legend = svg.selectAll('.legend')
           .data(color.domain())
