@@ -2,10 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Pie Chart v4</title>
+    <title>Pie Chart v5</title>
     <style>
     body {
       font: 10px sans-serif;
+    }
+    label {
+      cursor: pointer;
     }
     .tooltip {
       background: #eee;
@@ -20,14 +23,19 @@
     </style>
   </head>
   <body>
+  <form>
+    <h3>Include Ontario</h3>
+    <label><input type="radio" name="ontario" value="yes" checked> Yes</label>
+    <label><input type="radio" name="ontario" value="no"> No</label>
+  </form>
     <script src="d3.v3.min.js"></script>
     <script>
-    (function() {
+    (function(){
       'use strict';
 
       var width = 960,
-        height = 500,
-        radius = Math.min(width, height) / 2;
+          height = 500,
+          radius = Math.min(width, height) / 2;
 
       var color = d3.scale.category10();
 
@@ -36,7 +44,8 @@
         .innerRadius(radius - 110);
 
       var pie = d3.layout.pie()
-        .value(function(d) { return d.count; });
+        .value(function(d) { return d.count; }).
+        sort(null);
 
       var tooltip = d3.select('body')
         .append('div')
@@ -63,20 +72,29 @@
         .append('g')
         .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
+      var arcTween = function(a) {
+        var i = d3.interpolate(this._current, a);
+        this._current = i(0);
+        return function(t) {
+          return arc(i(t));
+        };
+      };
+
       d3.csv('provinces.csv', function(error, data) {
         data.forEach(function(d) {
           d.count = +d.count;
         });
 
-        var path = svg.selectAll('path')
-          .data(pie(data))
+        var path = svg.datum(data).selectAll('path')
+          .data(pie)
           .enter()
           .append('path')
-          .attr('d', arc)
           .attr('fill', function(d, i) { return color(d.data.province); })
+          .attr('d', arc)
           .on('mouseover', tooltipOn)
           .on('mousemove', tooltipMove)
-          .on('mouseout', tooltipOff);
+          .on('mouseout', tooltipOff)
+          .each(function(d) { this._current = d; });
 
         var legend = svg.selectAll('.legend')
           .data(color.domain())
@@ -98,9 +116,20 @@
           .attr('y', 9)
           .attr('dy', '.35em')
           .text(function(d) { return d; });
+
+        var change = function() {
+          if (this.value === 'yes') {
+            pie.value(function(d) { return d.count; }); 
+          } else {
+            pie.value(function(d) { return (d.province === 'ON') ? 0 : d.count; });
+          }
+          path = path.data(pie);
+          path.transition().duration(750).attrTween('d', arcTween);
+        };
+
+        d3.selectAll('input').on('change', change);
       });
     })();
     </script>
   </body>
 </html>
-
