@@ -52,7 +52,8 @@
         .attr('class', 'tooltip');
 
       var tooltipOn = function(d, i) {
-        tooltip.html('<div>' + d.data.province + '</div><div>' + d.data.count + '</div>')
+        var content = '<div>' + d.data.province + '</div><div>' + d.data.count + '</div>';
+        tooltip.html(content)
           .style('visibility', 'visible');
       };
 
